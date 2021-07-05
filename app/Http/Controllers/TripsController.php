@@ -143,3 +143,48 @@ class TripsController extends Controller
         ])->get();
     }
 
+    public function book(Request $request){
+        $tripId = $request->input('trip_id');
+        $seatId = $request->input('seat_id');
+
+        $startStation = Station::firstWhere('name', $request->query('start'));
+        $endStation = Station::firstWhere('name', $request->query('end'));
+
+        $tripStartStation = CrossOverStations::firstWhere([
+                                    ['station_id', $startStation->id],
+                                    ['trip_id', $tripId]    
+                                ]);
+        $endTripStation = CrossOverStations::firstWhere([
+                                    ['station_id', '=', $endStation->id],
+                                    ['trip_id', '=', $tripId],
+                                ]);
+
+        // check if user has chosen an available seat across all his/her trip
+        if ($this->isSuitableTrip($tripStartStation, $endStation)){
+            $availableSeats = $this->findAvailableSeats($startStation, $endStation, $tripStartStation);
+            if (in_array($seatId, $availableSeats)){
+                // mark seat as unavailable for all user trip (crossed-by stations)
+                $tripStationsIds = $this->getUserTripStations($tripStartStation, $endTripStation)
+                                        ->pluck('id');
+                                        
+                $this->bookSeat($seatId, $tripStationsIds);
+
+                $trip = Trip::find($tripId);
+                $result = [
+                    'trip' => [
+                        'id' => $trip->id,
+                        'name' => $trip->name
+                    ],
+                    'seat_id' => $seatId
+                ];
+                return response(json_encode($result), 201);
+            }
+        }
+    }
+
+    private function bookSeat($seatId, $tripStationsIds){
+        AvailableSeats::where('seat_id', $seatId)
+                        ->whereIn('tripStation_id', $tripStationsIds)
+                        ->update(['available' => false]);
+    }
+}
