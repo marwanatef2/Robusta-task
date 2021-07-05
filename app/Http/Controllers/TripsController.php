@@ -59,15 +59,49 @@ class TripsController extends Controller
         $result = [];
         $statusCode = 200;
 
-        $startStation = Station::firstWhere('name', $request->query('start'));
-        $endStation = Station::firstWhere('name', $request->query('end'));
+        // validate query strings
+        if(is_null($request->query('start')) || is_null($request->query('end'))){
+            $result = [
+                'message' => "trip start or end cannot be null"
+            ];
+            return response(json_encode($result), 400);
+        }
 
+        $startStation = Station::firstWhere('name', $request->query('start'));
+        // validate start station
+        if (is_null($startStation)){
+            $result = [
+                'message' => "No station match start station '".$request->query('start')."'"
+            ];
+            return response(json_encode($result), 404);
+        }
+
+        $endStation = Station::firstWhere('name', $request->query('end'));
+        // validate end station
+        if (is_null($endStation)){
+            $result = [
+                'message' => "No station match end station '".$request->query('end')."'"
+            ];
+            return response(json_encode($result), 404);
+        }        
+
+        // find possible trips passing by start station
         $possibleTrips = CrossOverStations::select('trip_id', 'order_in_trip')
                                 ->where('station_id', '=', $startStation->id)
                                 ->get();
-
+        if(empty($possibleTrips->all())){
+            $result = [
+                'message' => "No trip passes by the start station '".$request->query('start')."'"
+            ];
+            return response(json_encode($result), 404);
+        }
+        
+        $suitableTripsCount = 0;
         foreach ($possibleTrips as $tripStation) {
             if ($this->isSuitableTrip($tripStation, $endStation)){
+                $suitableTripsCount++;
+
+                // find avaialable seats (if any) in this suitable trip
                 $availableSeats = $this->findAvailableSeats($startStation, $endStation, $tripStation);
                 if(!empty($availableSeats)){
                     $trip = Trip::find($tripStation->trip_id);
@@ -84,7 +118,13 @@ class TripsController extends Controller
             }
         }
 
-        if (empty($result)){
+        if($suitableTripsCount == 0){
+            $result = [
+                'message' => "No avaialable trips pass by the end station '".$request->query('start')."'"
+            ];
+            $statusCode = 404;
+        }
+        elseif (empty($result)){
             $result = [
                 'message' => "No avaialable seats currently"
             ];
@@ -147,8 +187,48 @@ class TripsController extends Controller
         $tripId = $request->input('trip_id');
         $seatId = $request->input('seat_id');
 
+        // validate request body
+        if(is_null($request->input('trip_id')) || is_null($request->input('seat_id'))){
+            $result = [
+                'message' => "seat_id or trip_id cannot be null"
+            ];
+            return response(json_encode($result), 400);
+        }
+
+        $trip = Trip::find($tripId);
+        // validate trip exists
+        if(is_null($trip)){
+            $result = [
+                'message' => "No trip with trip_id ".$tripId
+            ];
+            return response(json_encode($result), 404);
+        }
+
+        // validate query strings
+        if(is_null($request->query('start')) || is_null($request->query('end'))){
+            $result = [
+                'message' => "trip start or end cannot be null"
+            ];
+            return response(json_encode($result), 400);
+        }
+
         $startStation = Station::firstWhere('name', $request->query('start'));
+        // validate start station
+        if (is_null($startStation)){
+            $result = [
+                'message' => "No station match start station '".$request->query('start')."'"
+            ];
+            return response(json_encode($result), 404);
+        }
+
         $endStation = Station::firstWhere('name', $request->query('end'));
+        // validate end station
+        if (is_null($endStation)){
+            $result = [
+                'message' => "No station match end station '".$request->query('end')."'"
+            ];
+            return response(json_encode($result), 404);
+        }        
 
         $tripStartStation = CrossOverStations::firstWhere([
                                     ['station_id', $startStation->id],
@@ -169,7 +249,6 @@ class TripsController extends Controller
                                         
                 $this->bookSeat($seatId, $tripStationsIds);
 
-                $trip = Trip::find($tripId);
                 $result = [
                     'trip' => [
                         'id' => $trip->id,
@@ -179,6 +258,18 @@ class TripsController extends Controller
                 ];
                 return response(json_encode($result), 201);
             }
+            else{
+                $result = [
+                    'message' => "Seat ".$seatId." is not available in this trip"
+                ];
+                return response(json_encode($result), 400);    
+            }
+        }
+        else {
+            $result = [
+                'message' => "Trip '".$trip->name."' does not cross over '".$request->query('start')."' then '".$request->query('end')."'"
+            ];
+            return response(json_encode($result), 400);
         }
     }
 
