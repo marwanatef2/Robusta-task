@@ -193,14 +193,14 @@ Start booking seats at specific trips to consume them and check if they reflect 
 
 The project structure follows the [Laravel 8 project directory](https://laravel.com/docs/8.x/structure) but many files are not used, *haven't removed them in order not to mess with anything*.  
 Nevertheless, the main project files can be found here:
-* [API Endpoints]()  
+* [API Endpoints](https://github.com/marwanatef2/Robusta-task/blob/master/routes/api.php)  
 * Business Logic  
-    * [Trips Controller]()
-    * [Seats Controller]()
-* Application [Models]()
+    * [Trips Controller](https://github.com/marwanatef2/Robusta-task/blob/master/app/Http/Controllers/TripsController.php)
+    * [Seats Controller](https://github.com/marwanatef2/Robusta-task/blob/master/app/Http/Controllers/SeatsController.php)
+* Application [Models](https://github.com/marwanatef2/Robusta-task/tree/master/app/Models)
 * Database  
-    * [Migrations]()
-    * [Seeders]()  
+    * [Migrations](https://github.com/marwanatef2/Robusta-task/tree/master/database/migrations)
+    * [Seeders](https://github.com/marwanatef2/Robusta-task/tree/master/database/seeders)  
 
 ### EER Diagram
 ![EERD](EERdiagram.png)
