@@ -3,7 +3,6 @@ FROM ubuntu:20.04
 LABEL maintainer="Taylor Otwell"
 
 ARG WWWGROUP
-ARG XDEBUG
 
 WORKDIR /var/www/html
 
@@ -30,10 +29,6 @@ RUN apt-get update \
        php8.0-msgpack php8.0-igbinary php8.0-ldap \
        php8.0-redis
        
-RUN if [ ${XDEBUG}] ; then \
-    apt-get install -y php-xdebug; \
-fi;
-
 RUN php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer \
     && curl -sL https://deb.nodesource.com/setup_15.x | bash - \
     && apt-get install -y nodejs \
