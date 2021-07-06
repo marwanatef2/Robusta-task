@@ -72,8 +72,8 @@ Endpoint | Method | Body | Query Params | Description
 -------- | ------ | ---- | ------------ | -----------
 /trips | `GET` | - | - | Gets all trips  
 /trips | `POST` | `{stations: [] }` | - | Add a new trip with list of stations  
-/seats | `GET` | - | `start` - `end` | Get all available seats at all trips crossing by start & end stations  
-/seats | `POST` | `{seat_id, trip_id}` | `start` - `end` | Book a seat at a specific trip from start station to end station  
+/seats | `GET` | - | `start : string` - `end : string` | Get all available seats at all trips crossing by start & end stations  
+/seats | `POST` | `{seat_id, trip_id}` | `start : string` - `end : string` | Book a seat at a specific trip from start station to end station  
 
 ### Playing around
 
