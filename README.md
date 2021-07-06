@@ -1,5 +1,6 @@
 [<img src="robusta.png" alt="robusta" width="150"/>](https://robustastudio.com/)  
 
+
 # Fleet Management System
 
 This repository is for Robusta Studio's task building a fleet management (bus booking) system.  
@@ -7,7 +8,7 @@ This repository is for Robusta Studio's task building a fleet management (bus bo
 ## Built with
 
 Stack | Technology used
-- | -
+----- | ---------------
 Programming Language | PHP
 Web Framework | [Laravel 8](https://laravel.com/docs/8.x)
 Relational Database | MySQL
@@ -68,7 +69,7 @@ After you have installed Docker on your machine follow these steps to get the pr
 All API endpoints are prefixed with `/api`  
 
 Endpoint | Method | Body | Query Params | Description
-- | - | - | - | -
+-------- | ------ | ---- | ------------ | -----------
 /trips | `GET` | - | - | Gets all trips  
 /trips | `POST` | `{stations: [] }` | - | Add a new trip with list of stations  
 /seats | `GET` | - | `start` - `end` | Get all available seats at all trips crossing by start & end stations  
