@@ -30,4 +30,4 @@ Route::post('/trips', [TripsController::class, 'add']);
 
 Route::get('/seats', [SeatsController::class, 'showAvailableSeats']);
 
-Route::post('/trips/seats', [TripsController::class, 'book']);
+Route::post('/seats', [SeatsController::class, 'book']);
