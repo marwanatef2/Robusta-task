@@ -53,4 +53,24 @@ class TripsController extends Controller
             $tripStation->seats()->attach($seat, ['available' => true]);
         }
     }
+
+    public function getAll(){
+        $result = [];
+        $allTrips = Trip::all();
+        foreach ($allTrips as $trip) {
+            array_push($result, [
+                'name' => $trip->name,
+                'total_stations' => count($trip->stations()),
+                'stations' => $trip->stations()
+            ]);
+        }
+        if (empty($result)){
+            return response([
+                'message' => "No trips found"
+            ], 404);
+        }
+        else {
+            return response($result);
+        }
+    }
 }

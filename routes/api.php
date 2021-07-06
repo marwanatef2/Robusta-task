@@ -26,8 +26,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/trips', [TripsController::class, 'getAll']);
 Route::post('/trips', [TripsController::class, 'add']);
 
 Route::get('/seats', [SeatsController::class, 'showAvailableSeats']);
-
 Route::post('/seats', [SeatsController::class, 'book']);
